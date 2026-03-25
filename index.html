@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Facility Management System</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet" />
+    <link href="common.css" rel="stylesheet" />
+    <link href="index.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="page">
+
+        <!-- MAIN DISPLAY -->
+        <div class="main-display">
+            <div class="mds-inner">
+                <div class="mds-top">
+                    <div class="mds-clock-block">
+                        <div class="mds-clock-time" id="clockTime">00:00</div>
+                        <div class="mds-clock-sep"></div>
+                        <div class="mds-clock-date" id="clockDate">--</div>
+                    </div>
+                    <div class="notif-bell-wrap">
+                        <button class="notif-bell" id="notifBellBtn">
+                            🔔 Notifications <span class="notif-count" id="notifCount">0</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="mds-grid">
+                    <div class="mds-box">
+                        <div class="mds-val" id="gTotal">0</div>
+                        <div class="mds-lbl">Total Tasks</div>
+                    </div>
+                    <div class="mds-box">
+                        <div class="mds-val" id="gDone">0</div>
+                        <div class="mds-lbl">Completed</div>
+                    </div>
+                    <div class="mds-box">
+                        <div class="mds-val" id="gTodo">0</div>
+                        <div class="mds-lbl">Incomplete</div>
+                    </div>
+                    <div class="mds-box">
+                        <div class="mds-val" id="gPct">0%</div>
+                        <div class="mds-lbl">Done Rate</div>
+                    </div>
+                    <div class="mds-box">
+                        <div class="mds-val" id="gRooms">0</div>
+                        <div class="mds-lbl">Total Rooms</div>
+                    </div>
+                    <div class="mds-box">
+                        <div class="mds-val" id="gRoomsDone">0</div>
+                        <div class="mds-lbl">Rooms Done</div>
+                    </div>
+                </div>
+                <div class="mds-bar-row">
+                    <div class="mds-bar-wrap">
+                        <div class="mds-bar-fill" id="gBar" style="width:0%"></div>
+                    </div>
+                    <div class="mds-bar-pct" id="gBarPct">0%</div>
+                </div>
+                <div class="aig-brand">AIG</div>
+            </div>
+        </div>
+
+        <!-- NOTIFICATION PANEL -->
+        <div class="notif-panel" id="notifPanel">
+            <div class="notif-panel-head">
+                <span>🔔 NOTIFICATIONS</span>
+                <div class="notif-panel-head-actions">
+                    <button class="notif-clear-all" id="clearAllBtn">CLEAR ALL</button>
+                    <button id="closeNotifBtn">✕</button>
+                </div>
+            </div>
+            <div class="notif-items" id="notifItems">
+                <div class="notif-empty">NO NOTIFICATIONS </div>
+            </div>
+        </div>
+
+        <!-- INTERNAL SECTION -->
+        <div class="internal-section">
+            <div class="internal-layout">
+                <div class="left-action-panel">
+                    <a class="action-card ac-avisid" href="floor.html?floor=aivsid" style="animation-delay:.15s">
+                        <div class="ac-icon">🏭</div>
+                        <div class="ac-text"><span class="ac-label">Airside</span><span class="ac-sub">External
+                                Facility</span></div>
+                        <span class="ac-arrow">↗</span>
+                    </a>
+                    <a class="action-card ac-pump" href="floor.html?floor=pump" style="animation-delay:.21s">
+                        <div class="ac-icon">⚙️</div>
+                        <div class="ac-text"><span class="ac-label">Bump Room</span><span class="ac-sub">Utility
+                                Station</span></div>
+                        <span class="ac-arrow">↗</span>
+                    </a>
+                    <a class="action-card ac-building" href="floor.html?floor=buolching" style="animation-delay:.27s">
+                        <div class="ac-icon">🏗️</div>
+                        <div class="ac-text"><span class="ac-label">Other Building</span><span class="ac-sub">Buolching
+                                Site</span></div>
+                        <span class="ac-arrow">↗</span>
+                    </a>
+                </div>
+                <div class="building-wrap">
+                    <div class="bw-label">Click a floor</div>
+                    <div class="building-photo-wrap" id="buildingWrap">
+                        <img class="building-photo" id="bldgImg" src="/newB.png" alt="Building" />
+                        <div class="floor-overlays" id="floorOverlays"></div>
+                    </div>
+                </div>
+                <div class="floors-panel" id="floorsPanel"></div>
+            </div>
+        </div>
+
+    </div><!-- /.page -->
+
+    <script defer src="index.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Floor — AIG Facility Management</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="common.css" rel="stylesheet" />
+    <link href="floor.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="page">
+
+        <!-- TOP NAV -->
+        <div class="topnav">
+            <a class="back-btn" href="index.html">← Home</a>
+            <div class="crumb">AIG <span id="navLabel">—</span></div>
+            <div class="autosave-dot" id="saveIndicator">
+                <div class="as-dot" id="asDot"></div><span>AUTO SAVED</span>
+            </div>
+        </div>
+
+        <!-- FLOOR DISPLAY -->
+        <div class="floor-display" id="floorDisplay">
+            <div class="fds-inner">
+                <div class="fds-top">
+                    <div class="fds-live">
+                        <div class="fds-live-dot"></div>
+                        <span class="fds-live-lbl" id="fdsFloorPill">—</span>
+                    </div>
+                    <div class="notif-bell-wrap">
+                        <button class="notif-bell" id="floorNotifBellBtn">
+                            🔔 Notifications <span class="notif-count" id="floorNotifCount">0</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="fds-stats">
+                    <div class="fds-box">
+                        <div class="fds-val" id="dTotal">0</div>
+                        <div class="fds-lbl">Total Tasks</div>
+                    </div>
+                    <div class="fds-box">
+                        <div class="fds-val" id="dDone">0</div>
+                        <div class="fds-lbl">Completed</div>
+                    </div>
+                    <div class="fds-box">
+                        <div class="fds-val" id="dTodo">0</div>
+                        <div class="fds-lbl">Incomplete</div>
+                    </div>
+                    <div class="fds-box">
+                        <div class="fds-val" id="dPct">0%</div>
+                        <div class="fds-lbl">Done Rate</div>
+                    </div>
+                    <div class="fds-box">
+                        <div class="fds-val" id="dRooms">0</div>
+                        <div class="fds-lbl">Total Rooms</div>
+                    </div>
+                    <div class="fds-box">
+                        <div class="fds-val" id="dRoomsDone">0</div>
+                        <div class="fds-lbl">Rooms Done</div>
+                    </div>
+                </div>
+                <div class="fds-bar-row">
+                    <div class="fds-bar-wrap">
+                        <div class="fds-bar-fill" id="dBar" style="width:0%"></div>
+                    </div>
+                    <div class="fds-bar-pct" id="dBarPct">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADD ROOM -->
+        <div class="add-room-section">
+            <div class="ar-grid-simple">
+                <div class="field-group">
+                    <input id="roomInput" type="text" placeholder="Enter room name…" maxlength="60" />
+                </div>
+                <button class="btn-add-room" onclick="addRoom()">+ Add Room</button>
+            </div>
+            <!-- AUTO-SWITCHING — 3 PHASES -->
+            <div class="auto-switch-section">
+                <label class="auto-switch-toggle">
+                    <input type="checkbox" id="autoSwitchToggle" onchange="toggleAutoSwitch()" />
+                    <span class="auto-switch-label">⚡ Enable <span>Automatic Switch</span></span>
+                </label>
+                <div class="auto-schedule-grid" id="autoScheduleGrid">
+                    <div class="schedule-header"><span>Phase</span><span>Type</span><span>Duration</span></div>
+                    <div id="scheduleRows"></div>
+                </div>
+            </div>
+            <div class="err-msg" id="errMsg"></div>
+        </div>
+
+        <!-- ROOMS SECTION HEAD -->
+        <div class="rooms-section-head">
+            <div class="rsh-left">
+                <div class="rsh-title">Rooms</div>
+                <div class="rsh-badge" id="roomBadge">0</div>
+            </div>
+            <div class="rsh-right">
+                <div class="search-wrap">
+                    <span class="search-icon">🔍</span>
+                    <input id="searchInput" type="text" placeholder="Search rooms…" oninput="renderRooms()" />
+                </div>
+                <button class="btn-reset-floor" onclick="openResetModal()">🔄 Reset Rooms</button>
+            </div>
+        </div>
+
+        <div class="rooms-list" id="roomsList"></div>
+
+    </div><!-- /.page -->
+
+    <!-- NOTIFICATION PANEL -->
+    <div class="notif-panel" id="floorNotifPanel">
+        <div class="notif-panel-head">
+            <span>🔔 NOTIFICATIONS</span>
+            <div class="notif-panel-head-actions">
+                <button class="notif-clear-all" id="floorClearAllBtn">CLEAR ALL</button>
+                <button id="floorCloseNotifBtn">✕</button>
+            </div>
+        </div>
+        <div class="notif-items" id="floorNotifItems">
+            <div class="notif-empty">NO NOTIFICATIONS YET</div>
+        </div>
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-box">
+            <div class="modal-title">✏️ Edit Room</div>
+            <div class="modal-fields">
+                <div class="modal-field">
+                    <label>Room Name</label>
+                    <input id="editName" type="text" maxlength="60" />
+                </div>
+                <div class="modal-field">
+                    <label>Automatic Switch</label>
+                    <div class="edit-auto-switch-section">
+                        <label class="auto-switch-toggle" style="margin-bottom:.6rem">
+                            <input type="checkbox" id="editAutoToggle" onchange="toggleEditAutoSwitch()" />
+                            <span class="auto-switch-label">⚡ Enable <span>Automatic Switch</span></span>
+                        </label>
+                        <div class="auto-schedule-grid" id="editAutoGrid">
+                            <div class="schedule-header"><span>Phase</span><span>Type</span><span>Duration</span></div>
+                            <div id="editScheduleRows"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-btns">
+                <button class="modal-cancel" onclick="closeEditModal()">Cancel</button>
+                <button class="modal-save" onclick="saveEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE MODAL -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-box">
+            <div class="modal-title">🗑️ Delete Room</div>
+            <p class="modal-msg">Are you sure you want to delete <strong id="deleteRoomName"></strong>? This will
+                permanently remove all tasks and data.</p>
+            <div class="modal-btns">
+                <button class="modal-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="modal-danger" onclick="confirmDelete()">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESET MODAL -->
+    <div class="modal-overlay" id="resetModal">
+        <div class="modal-box">
+            <div class="modal-title">🔄 Reset Room Data</div>
+            <div class="modal-warn">⚠️ This will clear all table data EXCEPT the first column (task descriptions) for
+                selected rooms.</div>
+            <p class="modal-msg" style="margin-bottom:.8rem">Select rooms to reset:</p>
+            <div class="reset-rooms-list" id="resetRoomsList">
+                <label class="reset-select-all">
+                    <input type="checkbox" id="selectAllRooms" onchange="toggleSelectAll()" /> SELECT ALL
+                </label>
+            </div>
+            <div class="modal-btns">
+                <button class="modal-cancel" onclick="closeResetModal()">Cancel</button>
+                <button class="modal-danger" onclick="confirmReset()">Reset Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script defer src="floor.js"></script>
+</body>
+
+</html>
